@@ -89,7 +89,7 @@ main:
         bx      lr
 ```
 
-少し重いコード
+## 少し重いコード
 ```
 #include <stdio.h>
 
@@ -176,7 +176,7 @@ main:
         pop     {r4, fp, pc}
 .L5:
         .word   .LC0
-        ```
+```
 
 ### win
 ```
