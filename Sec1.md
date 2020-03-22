@@ -89,7 +89,7 @@ main:
         bx      lr
 ```
 
-Win
+少し重いコード
 ```
 #include <stdio.h>
 
@@ -101,9 +101,40 @@ int main(void){
     printf("%f\n",sum);
   }
 }
-
 ```
 
+x86 gcc
+```
+.LC1:
+        .string "%f\n"
+main:
+        push    rbp
+        mov     rbp, rsp
+        sub     rsp, 16
+        pxor    xmm0, xmm0
+        movss   DWORD PTR [rbp-8], xmm0
+        mov     DWORD PTR [rbp-4], 0
+        jmp     .L2
+.L3:
+        cvtsi2ss        xmm0, DWORD PTR [rbp-4]
+        movss   xmm1, DWORD PTR [rbp-8]
+        addss   xmm0, xmm1
+        movss   DWORD PTR [rbp-8], xmm0
+        cvtss2sd        xmm0, DWORD PTR [rbp-8]
+        mov     edi, OFFSET FLAT:.LC1
+        mov     eax, 1
+        call    printf
+        add     DWORD PTR [rbp-4], 1
+.L2:
+        cmp     DWORD PTR [rbp-4], 10
+        jle     .L3
+        mov     eax, 0
+        leave
+        ret
+```
+
+
+win
 ```
 _DATA   SEGMENT
 $SG4507 DB        '%f', 0aH, 00H
