@@ -89,7 +89,125 @@ main:
         bx      lr
 ```
 
+Win
+```
+#include <stdio.h>
 
+int main(void){
+  int i;
+  float sum = 0;
+  for(i=0; i<=10; i++){
+    sum += i;
+    printf("%f\n",sum);
+  }
+}
+
+```
+
+```
+_DATA   SEGMENT
+$SG4507 DB        '%f', 0aH, 00H
+_DATA   ENDS
+_DATA   SEGMENT
+COMM    ?_OptionsStorage@?1??__local_stdio_printf_options@@9@9:QWORD                                                    ; `__local_stdio_printf_options'::`2'::_OptionsStorage
+_DATA   ENDS
+
+_sum$ = -8                                          ; size = 4
+_i$ = -4                                                ; size = 4
+_main   PROC
+        push    ebp
+        mov     ebp, esp
+        sub     esp, 8
+        xorps   xmm0, xmm0
+        movss   DWORD PTR _sum$[ebp], xmm0
+        mov     DWORD PTR _i$[ebp], 0
+        jmp     SHORT $LN4@main
+$LN2@main:
+        mov     eax, DWORD PTR _i$[ebp]
+        add     eax, 1
+        mov     DWORD PTR _i$[ebp], eax
+$LN4@main:
+        cmp     DWORD PTR _i$[ebp], 10                    ; 0000000aH
+        jg      SHORT $LN3@main
+        cvtsi2ss xmm0, DWORD PTR _i$[ebp]
+        addss   xmm0, DWORD PTR _sum$[ebp]
+        movss   DWORD PTR _sum$[ebp], xmm0
+        cvtss2sd xmm0, DWORD PTR _sum$[ebp]
+        sub     esp, 8
+        movsd   QWORD PTR [esp], xmm0
+        push    OFFSET $SG4507
+        call    _printf
+        add     esp, 12                             ; 0000000cH
+        jmp     SHORT $LN2@main
+$LN3@main:
+        xor     eax, eax
+        mov     esp, ebp
+        pop     ebp
+        ret     0
+_main   ENDP
+
+___local_stdio_printf_options PROC                  ; COMDAT
+        push    ebp
+        mov     ebp, esp
+        mov     eax, OFFSET ?_OptionsStorage@?1??__local_stdio_printf_options@@9@9 ; `__local_stdio_printf_options'::`2'::_OptionsStorage
+        pop     ebp
+        ret     0
+___local_stdio_printf_options ENDP
+
+__Stream$ = 8                                     ; size = 4
+__Format$ = 12                                      ; size = 4
+__Locale$ = 16                                      ; size = 4
+__ArgList$ = 20                               ; size = 4
+__vfprintf_l PROC                                 ; COMDAT
+        push    ebp
+        mov     ebp, esp
+        mov     eax, DWORD PTR __ArgList$[ebp]
+        push    eax
+        mov     ecx, DWORD PTR __Locale$[ebp]
+        push    ecx
+        mov     edx, DWORD PTR __Format$[ebp]
+        push    edx
+        mov     eax, DWORD PTR __Stream$[ebp]
+        push    eax
+        call    ___local_stdio_printf_options
+        mov     ecx, DWORD PTR [eax+4]
+        push    ecx
+        mov     edx, DWORD PTR [eax]
+        push    edx
+        call    ___stdio_common_vfprintf
+        add     esp, 24                             ; 00000018H
+        pop     ebp
+        ret     0
+__vfprintf_l ENDP
+
+__Result$ = -8                                      ; size = 4
+__ArgList$ = -4                               ; size = 4
+__Format$ = 8                                     ; size = 4
+_printf PROC                                          ; COMDAT
+        push    ebp
+        mov     ebp, esp
+        sub     esp, 8
+        lea     eax, DWORD PTR __Format$[ebp+4]
+        mov     DWORD PTR __ArgList$[ebp], eax
+        mov     ecx, DWORD PTR __ArgList$[ebp]
+        push    ecx
+        push    0
+        mov     edx, DWORD PTR __Format$[ebp]
+        push    edx
+        push    1
+        call    ___acrt_iob_func
+        add     esp, 4
+        push    eax
+        call    __vfprintf_l
+        add     esp, 16                             ; 00000010H
+        mov     DWORD PTR __Result$[ebp], eax
+        mov     DWORD PTR __ArgList$[ebp], 0
+        mov     eax, DWORD PTR __Result$[ebp]
+        mov     esp, ebp
+        pop     ebp
+        ret     0
+_printf ENDP
+```
 
 
 # 1-3
