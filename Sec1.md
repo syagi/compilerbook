@@ -103,7 +103,7 @@ int main(void){
 }
 ```
 
-x86 gcc
+### x86 gcc
 ```
 .LC1:
         .string "%f\n"
@@ -133,8 +133,52 @@ main:
         ret
 ```
 
+### arm
+```
+.LC0:
+        .ascii  "%f\012\000"
+main:
+        push    {r4, fp, lr}
+        add     fp, sp, #8
+        sub     sp, sp, #12
+        mov     r3, #0
+        str     r3, [fp, #-20]    @ float
+        mov     r3, #0
+        str     r3, [fp, #-16]
+        b       .L2
+.L3:
+        ldr     r0, [fp, #-16]
+        bl      __aeabi_i2f
+        mov     r3, r0
+        mov     r1, r3
+        ldr     r0, [fp, #-20]    @ float
+        bl      __aeabi_fadd
+        mov     r3, r0
+        str     r3, [fp, #-20]    @ float
+        ldr     r0, [fp, #-20]    @ float
+        bl      __aeabi_f2d
+        mov     r3, r0
+        mov     r4, r1
+        mov     r2, r3
+        mov     r3, r4
+        ldr     r0, .L5
+        bl      printf
+        ldr     r3, [fp, #-16]
+        add     r3, r3, #1
+        str     r3, [fp, #-16]
+.L2:
+        ldr     r3, [fp, #-16]
+        cmp     r3, #10
+        ble     .L3
+        mov     r3, #0
+        mov     r0, r3
+        sub     sp, fp, #8
+        pop     {r4, fp, pc}
+.L5:
+        .word   .LC0
+        ```
 
-win
+### win
 ```
 _DATA   SEGMENT
 $SG4507 DB        '%f', 0aH, 00H
